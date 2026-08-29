@@ -1,0 +1,1 @@
+export default function PaymentButton({onPay,disabled=false,loading=false}){return <button onClick={onPay} disabled={disabled||loading} className="btn-primary w-full">{loading?'Opening secure payment...':'Pay securely with Razorpay'}</button>}

@@ -1,0 +1,13 @@
+import { useEffect, useState } from 'react';
+import { RefreshCw, Search, Users } from 'lucide-react';
+import AdminLayout from '../../../components/admin/AdminLayout';
+import api from '../../../services/api';
+import { useToast } from '../../../context/ToastContext';
+
+export default function AdminCustomers() {
+  const [customers, setCustomers] = useState([]); const [q, setQ] = useState(''); const [loading, setLoading] = useState(true); const { showToast } = useToast();
+  async function load() { setLoading(true); try { const { data } = await api.get('/admin/customers'); setCustomers(Array.isArray(data) ? data : []); } catch(e) { showToast(e?.response?.data?.message || 'Unable to load customers.', 'error'); } finally { setLoading(false); } }
+  useEffect(() => { load(); }, []);
+  const shown = customers.filter(c => `${c.name} ${c.email} ${c.phone}`.toLowerCase().includes(q.toLowerCase()));
+  return <AdminLayout><div className="admin-page-head"><div><p className="account-kicker"><Users size={14}/> Customer directory</p><h1 className="mt-2 text-3xl font-black sm:text-4xl">Customers</h1><p className="mt-2 text-sm text-stone-500">View customer profiles, order activity and lifetime spend.</p></div><button className="btn-secondary" onClick={load} disabled={loading}><RefreshCw size={16} className={loading?'animate-spin':''}/> Refresh</button></div><div className="card mt-7 overflow-hidden"><div className="admin-toolbar"><div className="admin-search"><Search size={17}/><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search name, email or phone"/></div><span className="status-pill">{shown.length} customers</span></div><div className="overflow-x-auto"><table className="w-full min-w-[850px] text-left text-sm"><thead className="bg-stone-50"><tr><th className="p-4">Customer</th><th className="p-4">Contact</th><th className="p-4">Profile</th><th className="p-4">Orders</th><th className="p-4">Total spent</th></tr></thead><tbody>{shown.map(c=><tr key={c.id} className="border-t"><td className="p-4"><b>{c.name || 'Achar Lover'}</b><span className="mt-1 block text-xs text-stone-400">{c.id}</span></td><td className="p-4"><span className="block">{c.email || '—'}</span><span className="text-xs text-stone-500">{c.phone || 'No phone'}</span></td><td className="p-4"><span className={c.profileComplete?'status-pill status-ok':'status-pill'}>{c.profileComplete?'Complete':'Incomplete'}</span></td><td className="p-4 font-bold">{c.orderCount || 0}</td><td className="p-4 font-black">₹{Number(c.totalSpent || 0)}</td></tr>)}{!shown.length && <tr><td colSpan="5" className="p-10 text-center text-stone-500">{loading?'Loading customers…':'No customers found.'}</td></tr>}</tbody></table></div></div></AdminLayout>;
+}

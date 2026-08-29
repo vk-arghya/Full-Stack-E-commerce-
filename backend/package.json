@@ -1,0 +1,18 @@
+{
+  "name": "acharjya-achar-bari-backend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "admin:set": "node scripts/set-admin.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "firebase-admin": "^13.4.0",
+    "razorpay": "^2.9.6"
+  }
+}
